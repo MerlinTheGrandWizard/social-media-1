@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "base for Social media App", "base for Social media App.pyproj", "{E4FDE69C-130F-4FD0-83B1-9F74ED64A66F}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "client", "client.pyproj", "{BEC2A6ED-54B5-4564-B483-536B9BC7582C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +11,13 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E4FDE69C-130F-4FD0-83B1-9F74ED64A66F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4FDE69C-130F-4FD0-83B1-9F74ED64A66F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEC2A6ED-54B5-4564-B483-536B9BC7582C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEC2A6ED-54B5-4564-B483-536B9BC7582C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {00A6E6B5-E4AB-4F1D-88AF-81F8426DEF33}
+		SolutionGuid = {1646A811-4376-4A25-807D-9E8DA9C1F4EC}
 	EndGlobalSection
 EndGlobal

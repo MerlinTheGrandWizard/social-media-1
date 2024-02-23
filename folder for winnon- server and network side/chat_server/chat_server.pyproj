@@ -2,15 +2,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>e4fde69c-130f-4fd0-83b1-9f74ed64a66f</ProjectGuid>
+    <ProjectGuid>4c9a3fe2-b997-4fcf-ae19-1ce986cac4a9</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>base_for_Social_media_App.py</StartupFile>
+    <StartupFile>chat_server.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>base for Social media App</Name>
-    <RootNamespace>base for Social media App</RootNamespace>
+    <Name>chat_server</Name>
+    <RootNamespace>chat_server</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +21,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="base_for_Social_media_App.py" />
+    <Compile Include="chat_server.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
