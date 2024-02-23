@@ -3,10 +3,10 @@ import threading
 import random
 import sqlite3
 import uuid
+import json
 
 
 connect = sqlite3.connect('Server.db')
-
 cursor = connect.cursor()
 #will delete if asked
 cursor.execute('''
@@ -27,6 +27,39 @@ cursor.execute('''
     ''')
 connect.commit()
 connect.close()
+
+#a method to check if there a duplicate user
+def check_user(userName):
+    connect = sqlite3.connect('Server.db')
+    cursor = connect.cursor()
+
+    cursor.execute('SELECT * FROM User_Table WHERE UserName=?', (userName,))
+    existing_record = cursor.fetchone()
+    connect.close()
+    
+    return existing_record is not None#true if username is in table , false otherwise
+
+def check_password(userName,Hashed_password):
+    if (check_user(userName)):
+        connect = sqlite3.connect('Server.db')
+        cursor = connect.cursor()
+
+        cursor.execute('SELECT * FROM User_Table WHERE UserName=? AND Hashed_Password=?', (userName, Hashed_password))
+        matching_record = cursor.fetchone()
+
+        connect.close()
+        return matching_record is not None#just checks if a record exsists, true is creds are good, false otherwise
+    else:
+        return False
+
+def giveOut_DM_messages(DMID):
+    connect = sqlite3.connect('Server.db')
+    cursor = connect.cursor()
+
+    # Assuming DMID, user1, and user2 are variables with the table and column names
+    cursor.execute(f'SELECT Message, DidUser1_send FROM {DMID}')
+    records = cursor.fetchall()
+    connect.close()#the variable records is a tuple 
 
 def add_toForums(createdBy,FormTitle):#creates a post
      connect = sqlite3.connect('Server.db')
@@ -54,13 +87,13 @@ def insert_user_record(user_name, hashed_password ):#method to add a record and 
 
     connect = sqlite3.connect('Server.db')
     cursor = connect.cursor()
-    UID = str(uuid.uuid4())
+    UID = str(uuid.uuid4())#will always be unique
     # Insert a new record into the User_Table with the specified UID
     cursor.execute('''
         INSERT INTO User_Table (UID, UserName, Hashed_Password, FriendTable_ID)
         VALUES (?, ?, ?, ?)
     ''', (UID, user_name, hashed_password, UID))
-    # the 'f' allows UID to be inputed
+    # the 'f' allows UID to be inputed, this is a friend table that is exclusive each unique user
     cursor.execute(f'''
         CREATE TABLE IF NOT EXISTS {UID} (
             friendID TEXT PRIMARY KEY,
@@ -134,14 +167,39 @@ def text_inForum(forumID, userID, message):
     ''', (userID, message))
     
     connect.commit()
-    connect.close()
+    connect.close()#adds to a message thread
 
 def handle_client(client_socket, address):
-    # Receive and print the message from the client
-    message = client_socket.recv(1024).decode('utf-8')
-    print(f"Received message from client: {message}")
+    # Receive and print the message from the client/ each client has their own thread so it can handle multple request(i think?)
+    #the client should send a pair: request type; data to process
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect(("127.0.0.1", 12345))
+    
+    request_type = client_socket.recv(1024).decode('utf-8')
+    print(f"Received message from client: {request_type}")# this message can be encoded so we know what to send to a user
+    if request_type == "authen_creds":
+        credentials_data = client_socket.recv(1024).decode('utf-8')
+        credentials = json.loads(credentials_data) # we now has the details
+        username = credentials.get("username")#self explantory
+        password = credentials.get("password")
+        if check_user(username):
+            if check_password(username,password):
+                #teh creds are good at this point
+                client_socket.send("Authentication successful.".encode())#this should let the login be successful
+            else:
+                client_socket.send("Authentication failed.".encode())
+        else:
+            client_socket.send("Invalid userName.".encode())
+    elif(request_type == "register_user"):
+        credentials_data = client_socket.recv(1024).decode('utf-8')
+        credentials = json.loads(credentials_data)
+        username = credentials.get("username")
+        password = credentials.get("password")
+        insert_user_record(username, password )#user is now in database
+    elif(request_type=="get_friendList"):#work on this
+        print(food)
     client_socket.close()
-    return message
+    
 
 def start_server():
     server_ip = "127.0.0.1"  # the ip (use 127.0.0.1 to test in a closed system)
