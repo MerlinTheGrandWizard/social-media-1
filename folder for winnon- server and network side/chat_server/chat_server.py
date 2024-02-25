@@ -39,6 +39,17 @@ def check_user(userName):
     
     return existing_record is not None#true if username is in table , false otherwise
 
+def username_to_ID(username):
+    connect = sqlite3.connect('Server.db')
+    cursor = connect.cursor()
+
+    cursor.execute('SELECT UID FROM User_Table WHERE UserName=?', (username,))
+    uid_record = cursor.fetchone()
+
+    connect.close()
+
+    return uid_record[0] if uid_record else None
+
 def check_password(userName,Hashed_password):
     if (check_user(userName)):
         connect = sqlite3.connect('Server.db')
@@ -106,6 +117,20 @@ def insert_user_record(user_name, hashed_password ):#method to add a record and 
     #DMID must also be unique
     connect.commit()
     connect.close()
+
+
+def get_friend_list_user_ids(user_uid):
+    connect = sqlite3.connect('Server.db')
+    cursor = connect.cursor()
+
+    cursor.execute(f'SELECT friendID FROM {user_uid} WHERE IsFriend=1')  # Assuming 'IsFriend' column indicates friends
+    friends = cursor.fetchall()
+
+    friend_user_ids = [friend[0] for friend in friends]
+
+    connect.close()
+
+    return friend_user_ids
 
 def add_friend_request(user_uid, friend_id,sent_friend_request, receive_friend_request):#add to user_uid client, states if the user client sent or recieved a request
     connect = sqlite3.connect('Server.db')
@@ -197,7 +222,14 @@ def handle_client(client_socket, address):
         password = credentials.get("password")
         insert_user_record(username, password )#user is now in database
     elif(request_type=="get_friendList"):#work on this
-        print(food)
+        credentials_data = client_socket.recv(1024).decode('utf-8')
+        credentials = json.loads(credentials_data)
+        username = credentials.get("username")
+        UID = username_to_ID(username)
+        list_of_friendID = get_friend_list_user_ids(UID)
+        friend_list_json = json.dumps(list_of_friendID)
+        client_socket.send(friend_list_json.encode())
+    
     client_socket.close()
     
 
